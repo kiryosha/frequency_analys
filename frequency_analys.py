@@ -4,6 +4,7 @@ import threading
 import subprocess
 from openpyxl import Workbook
 from openpyxl.utils import get_column_letter
+from openpyxl.formatting.rule import ColorScaleRule
 
 def writeLog(e):
 	log = open('./log.txt','a');
@@ -96,24 +97,24 @@ def printResult(resultFiles):
 	file.close();
 
 def wrireToXlsx():
-	countLine = 0;
-	countArr = [];
-	bytesArr = []
 	wb = Workbook();
 	ws = wb.active;
-	for i in range(1,3):
+	for i in range(1,257):
 		ws.column_dimensions[get_column_letter(i)].width = 12;
 	ws.title = 'Result';
 	file = open('./result.txt', 'r');
+	for i in range(2,258):
+		ws.cell(row=1, column=i, value = i-2);
+		ws.cell(row=i, column=1, value = i-2);
 	for line in file:
-		countLine += 1;
-		countArr.append(re.findall(r'\d+$', line)[0]);
-		bytesArr.append('(' + re.findall(r'(\d*, \d*)', line)[0] + ')');
-	for i in range(1, countLine + 1):
-		ws.cell(row= i, column= 1, value = bytesArr[i-1]);
-		ws.cell(row= i, column= 2, value = int(countArr[i-1]));
+		count = re.findall(r'\d+$', line)[0]
+		bytesTuple = re.findall(r'(\d*, \d*)', line)[0];
+		firstByte = re.findall(r'\d{1,3}', bytesTuple);
+		ws.cell(row=int(firstByte[0]) + 2, column=int(firstByte[1]) + 2, value = int(count));
 	file.close();
-	wb.save('result.xlsx')
+	rule = ColorScaleRule(start_type='min', start_color='000000', mid_type='percentile', mid_value=50, mid_color='666666', end_type='max', end_color='C0C0C0');
+	ws.conditional_formatting.add("B2:IW257", rule);
+	wb.save('result.xlsx');
 
 def delRubbish(file, fileOutNameArr):
 	for i in range(len(file)):
