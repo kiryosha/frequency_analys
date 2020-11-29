@@ -154,28 +154,28 @@ def frequencyResult():
 	fileFreq.close();
 
 def main():
-	#size = [];
-	#file = [];
-	#diskCount = [];
-	#fileOutNameArr = [];
-	#disksList = searchDisks();
-	#for name in disksList:
-		#tmp = writingFile(name);
-		#diskCount.append(tmp[1]);
-		#file.append(tmp[0]);
-		#size.append(tmp[2]);
-		#fileOut = './out' + name + '.txt';
-		#fileOutNameArr.append(fileOut);
-	#thd = [i for i in range(len(disksList))]
-	#for i in range(len(disksList)):
-		#thd[i] = threading.Thread(target=searchBytes, args=(file[i], diskCount[i], fileOutNameArr[i], size[i]));
-		#thd[i].start();
-	#for i in range(len(disksList)):
-		#thd[i].join();
-	#printResult(fileOutNameArr);
+	size = [];
+	file = [];
+	diskCount = [];
+	fileOutNameArr = [];
+	disksList = searchDisks();
+	for name in disksList:
+		tmp = writingFile(name);
+		diskCount.append(tmp[1]);
+		file.append(tmp[0]);
+		size.append(tmp[2]);
+		fileOut = './out' + name + '.txt';
+		fileOutNameArr.append(fileOut);
+	thd = [i for i in range(len(disksList))]
+	for i in range(len(disksList)):
+		thd[i] = threading.Thread(target=searchBytes, args=(file[i], diskCount[i], fileOutNameArr[i], size[i]));
+		thd[i].start();
+	for i in range(len(disksList)):
+		thd[i].join();
+	printResult(fileOutNameArr);
     frequencyResult();
     wrireToXlsx();
-	#delRubbish(file, fileOutNameArr);
+	delRubbish(file, fileOutNameArr);
 
 
 if __name__ == "__main__":
