@@ -102,19 +102,20 @@ def wrireToXlsx():
 	for i in range(1,257):
 		ws.column_dimensions[get_column_letter(i)].width = 12;
 	ws.title = 'Result';
-	file = open('./result.txt', 'r');
+	file = open('./result_frequency.txt', 'r');
 	for i in range(2,258):
 		ws.cell(row=1, column=i, value = i-2);
 		ws.cell(row=i, column=1, value = i-2);
 	for line in file:
-		count = re.findall(r'\d+$', line)[0]
+		index = line.index('-');
+		count = line[index+1:len(line)-1];
 		bytesTuple = re.findall(r'(\d*, \d*)', line)[0];
 		firstByte = re.findall(r'\d{1,3}', bytesTuple);
-		ws.cell(row=int(firstByte[0]) + 2, column=int(firstByte[1]) + 2, value = int(count));
+		ws.cell(row=int(firstByte[0]) + 2, column=int(firstByte[1]) + 2, value = float(count));
 	file.close();
 	rule = ColorScaleRule(start_type='min', start_color='000000', mid_type='percentile', mid_value=50, mid_color='666666', end_type='max', end_color='C0C0C0');
 	ws.conditional_formatting.add("B2:IW257", rule);
-	wb.save('result.xlsx');
+	wb.save('./result_frequency.xlsx');
 
 def delRubbish(file, fileOutNameArr):
 	for i in range(len(file)):
@@ -123,28 +124,58 @@ def delRubbish(file, fileOutNameArr):
 		path = os.path.join(os.path.abspath(os.path.dirname(__file__)), fileOutNameArr[i]);
 		os.remove(path);
 
+def coutFrequency(option):
+	count = 0;
+	frequencyList = [];
+	file = open('./result.txt', 'r');
+	for line in file:
+		temp = re.findall(r'\d+$', line)[0];
+		if option == 0:
+			count += int(temp);
+		else:
+			frequencyList.append(int(temp)/option);
+	file.close();
+	if option == 0:
+		return count;
+	else:
+		return frequencyList;
+
+def frequencyResult():
+	count = coutFrequency(0);
+	frequencyList = coutFrequency(count);
+	file = open('./result.txt', 'r');
+	fileFreq = open('./result_frequency.txt', 'w');
+	i = 0;
+	for line in file:
+		bytesTuple = re.findall(r'(\d*, \d*)', line)[0];
+		fileFreq.write(bytesTuple + " - " + str(frequencyList[i]) + '\n');
+		i += 1;
+	file.close();
+	fileFreq.close();
+
 def main():
-	size = [];
-	file = [];
-	diskCount = [];
-	fileOutNameArr = [];
-	disksList = searchDisks();
-	for name in disksList:
-		tmp = writingFile(name);
-		diskCount.append(tmp[1]);
-		file.append(tmp[0]);
-		size.append(tmp[2]);
-		fileOut = './out' + name + '.txt';
-		fileOutNameArr.append(fileOut);
-	thd = [i for i in range(len(disksList))]
-	for i in range(len(disksList)):
-		thd[i] = threading.Thread(target=searchBytes, args=(file[i], diskCount[i], fileOutNameArr[i], size[i]));
-		thd[i].start();
-	for i in range(len(disksList)):
-		thd[i].join();
-	printResult(fileOutNameArr);
-	wrireToXlsx();
-	delRubbish(file, fileOutNameArr);
+	#size = [];
+	#file = [];
+	#diskCount = [];
+	#fileOutNameArr = [];
+	#disksList = searchDisks();
+	#for name in disksList:
+		#tmp = writingFile(name);
+		#diskCount.append(tmp[1]);
+		#file.append(tmp[0]);
+		#size.append(tmp[2]);
+		#fileOut = './out' + name + '.txt';
+		#fileOutNameArr.append(fileOut);
+	#thd = [i for i in range(len(disksList))]
+	#for i in range(len(disksList)):
+		#thd[i] = threading.Thread(target=searchBytes, args=(file[i], diskCount[i], fileOutNameArr[i], size[i]));
+		#thd[i].start();
+	#for i in range(len(disksList)):
+		#thd[i].join();
+	#printResult(fileOutNameArr);
+    frequencyResult();
+    wrireToXlsx();
+	#delRubbish(file, fileOutNameArr);
 
 
 if __name__ == "__main__":
