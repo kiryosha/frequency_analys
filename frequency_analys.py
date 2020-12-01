@@ -173,8 +173,8 @@ def main():
 	for i in range(len(disksList)):
 		thd[i].join();
 	printResult(fileOutNameArr);
-    frequencyResult();
-    wrireToXlsx();
+	frequencyResult();
+	wrireToXlsx();
 	delRubbish(file, fileOutNameArr);
 
 
