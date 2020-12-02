@@ -7,9 +7,12 @@ from openpyxl.utils import get_column_letter
 from openpyxl.formatting.rule import ColorScaleRule
 
 def writeLog(e):
-	log = open('./log.txt','a');
-	log.write(str(e) + '\n');
-	log.close();
+    try:
+        log = open('./log.txt','a');
+        log.write(str(e) + '\n');
+        log.close();
+    except Exception as e:
+    	print(e);
 
 def searchDisks():
 	fsinfo = subprocess.check_output('fsutil fsinfo drives');
@@ -159,6 +162,7 @@ def main():
 	diskCount = [];
 	fileOutNameArr = [];
 	disksList = searchDisks();
+	print("Getting a list of files...")
 	for name in disksList:
 		tmp = writingFile(name);
 		diskCount.append(tmp[1]);
